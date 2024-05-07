@@ -1,4 +1,6 @@
-export const config = {
+const { browser } = require('@wdio/globals')
+
+exports.config = {
     //
     // ====================
     // Runner Configuration
@@ -49,10 +51,19 @@ export const config = {
     // Sauce Labs platform configurator - a great tool to configure your capabilities:
     // https://saucelabs.com/platform/platform-configurator
     //
-    capabilities: [{
-        browserName: 'chrome'
-    }],
-
+    
+    capabilities: [
+        {
+            browserName: 'chrome', // Untuk menjalankan tes di Google Chrome
+            'goog:chromeOptions': {
+            }
+        },
+        {
+            browserName: 'MicrosoftEdge', // Untuk menjalankan tes di Microsoft Edge
+            'ms:edgeOptions': {
+            }
+        }
+    ],
     //
     // ===================
     // Test Configurations
@@ -123,20 +134,20 @@ export const config = {
     // Test reporter for stdout.
     // The only one supported by default is 'dot'
     // see also: https://webdriver.io/docs/dot-reporter
-    reporters: ['spec',['allure', {outputDir: 'allure-results'}],'cucumberjs-json'],
+    reporters: ['spec','cucumberjs-json'],
 
     // If you are using Cucumber you need to specify the location of your step definitions.
     cucumberOpts: {
         // <string[]> (file/dir) require files before executing features
         require: ['./features/step-definitions/steps-sauce.js'],
         // <boolean> show full backtrace for errors
-        backtrace: false,
+        backtrace: true,
         // <string[]> ("extension:module") require files with the given EXTENSION after requiring MODULE (repeatable)
         requireModule: [],
         // <boolean> invoke formatters without executing steps
         dryRun: false,
         // <boolean> abort the run on first failure
-        failFast: false,
+        failFast: true,
         // <string[]> Only execute the scenarios with name matching the expression (repeatable).
         name: [],
         // <boolean> hide step definition snippets for pending steps
@@ -178,8 +189,9 @@ export const config = {
      * @param  {object} args     object that will be merged with the main configuration once worker is initialized
      * @param  {object} execArgv list of string arguments passed to the worker process
      */
-    // onWorkerStart: function (cid, caps, specs, args, execArgv) {
-    // },
+    onWorkerStart: function (cid, caps, specs, args, execArgv) {
+        console.log("Dieksekusi dari on worker start")
+    },
     /**
      * Gets executed just after a worker process has exited.
      * @param  {string} cid      capability id (e.g 0-0)
@@ -222,8 +234,9 @@ export const config = {
      * @param {string}                   uri      path to feature file
      * @param {GherkinDocument.IFeature} feature  Cucumber feature object
      */
-    // beforeFeature: function (uri, feature) {
-    // },
+    beforeFeature: function (uri, feature) {
+        console.log("Dieksekusi di Before Feature: Menyalakan Database")
+    },
     /**
      *
      * Runs before a Cucumber Scenario.
@@ -252,8 +265,13 @@ export const config = {
      * @param {number}             result.duration  duration of scenario in milliseconds
      * @param {object}             context          Cucumber World object
      */
-    // afterStep: function (step, scenario, result, context) {
-    // },
+    afterStep: async function (step, scenario, result, context) {
+        console.log("executed di after step 1")
+        if (result.passed) {
+            console.log("executed di after step 2")
+            await browser.saveScreenshot('./screenshot/failed-test.png')
+        }
+    },
     /**
      *
      * Runs after a Cucumber Scenario.
@@ -265,6 +283,7 @@ export const config = {
      * @param {object}                 context          Cucumber World object
      */
     // afterScenario: function (world, result, context) {
+    //     browser.saveScreenshot('./screenshot/test.png')
     // },
     /**
      *
