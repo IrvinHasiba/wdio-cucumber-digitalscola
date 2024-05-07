@@ -1,6 +1,7 @@
 {
-  "name": "wdio-cucumber-digitalscola",
-  "type": "module",
+  "dependencies": {
+    "wdio": "^6.0.1"
+  },
   "devDependencies": {
     "@wdio/allure-reporter": "^8.36.1",
     "@wdio/cli": "^8.36.1",
